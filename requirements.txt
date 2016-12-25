@@ -1,0 +1,37 @@
+
+
+
+
+pbr
+
+
+eventlet
+greenlet
+
+# restful
+Routes
+WebOb
+PasteDeploy
+Paste
+
+
+
+# oslo
+oslo.cache
+oslo.concurrency
+oslo.config
+oslo.context
+oslo.log
+oslo.reports
+oslo.serialization
+oslo.utils
+oslo.db
+oslo.rootwrap
+oslo.messaging
+oslo.policy
+oslo.i18n
+oslo.service
+oslo.middleware
+oslo.versionedobjects
+
+
