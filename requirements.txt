@@ -1,5 +1,7 @@
-
-
+# ansible
+# openssl problem
+# http://www.oesmith.co.uk/2011/05/23/pyopenssl-in-a-virtualenv-on-osx.html
+ansible
 
 
 pbr

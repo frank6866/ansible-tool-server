@@ -1,0 +1,257 @@
+aws, ali, tencent
+
+阿里，腾讯不通类型（独享型，共享型，内存型，计算型，io加强型）8c16g
+然后挂本地盘，本地ssd盘，云盘，高速云盘，高速ssd云盘
+交叉得到几个类型后
+pps，cpu，mem，net，iops的指标应该就够了
+
+
+还要有aws，aws口碑好，性能接近物理机。腾讯云，阿里云，性能坑深
+
+
+
+
+pps
+cpu
+net
+iops
+
+
+现有测试指标：cpu,iops,网络带宽(bond width),网络包量(pps)
+
+--------cpu
+[sysbench]
+yum install epel-release
+yum install sysbench
+
+sysbench  --num-threads=64 --test=cpu --cpu-max-prime=200 run
+输出格式：
+----
+sysbench 0.4.12:  multi-threaded system evaluation benchmark
+
+Running the test with following options:
+Number of threads: 64
+
+Doing CPU performance benchmark
+
+Threads started!
+Done.
+
+Maximum prime number checked in CPU test: 2000
+
+
+Test execution summary:
+    total time:                          1.0891s
+    total number of events:              10000
+    total time taken by event execution: 45.8095
+    per-request statistics:
+         min:                                  0.10ms
+         avg:                                  4.58ms
+         max:                               1072.73ms
+         approx.  95 percentile:               0.16ms
+
+Threads fairness:
+    events (avg/stddev):           156.2500/44.10
+    execution time (avg/stddev):   0.7158/0.23
+----
+
+取"total time"作为测试指标值
+
+
+
+sysbench ––test=memory ––num-threads=1 ––memory-block-size=4096 ––memory-total-size=1G run
+
+
+
+
+其中cpu用如下测试指标衡量：
+用sysbench  --num-threads=64 --test=cpu --cpu-max-prime=200000 run测试，求20w以内的素数，(20w/用时)为衡量指标
+
+
+
+
+[iops]
+yum -y install fio
+fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=test --filename=test --bs=4k --iodepth=64 --size=4G --readwrite=randwrite
+
+输出
+--
+test: (groupid=0, jobs=1): err= 0: pid=13851: Sun Dec 25 23:21:00 2016
+  write: io=1024.0MB, bw=14568KB/s, iops=3641, runt= 71979msec
+--
+获取输出中的iops
+
+
+
+
+
+
+
+[bandwidth]
+yum install epel-release iperf
+
+1. to_be_tested_server
+iperf -s
+
+2.client
+iperf -c to_be_tested_server
+
+
+服务端输出如下：
+[ ID] Interval       Transfer     Bandwidth
+[  4]  0.0-10.0 sec  10.8 GBytes  9.28 Gbits/sec
+
+取Bandwidth，9.28 Gbits/sec
+
+
+[pps]
+yum install epel-release iperf
+
+packets per seconds
+
+服务端同bandwidth
+
+客户端
+iperf -M 88 -c server_ip
+
+输出：
+[  5] local 10.192.40.120 port 5001 connected with 10.192.40.111 port 35332
+[  5]  0.0-10.1 sec   198 MBytes   165 Mbits/sec
+
+取Bandwidth，165 Mbits/sec
+
+
+[memory]
+sysbench --test=memory --num-threads=1 --memory-block-size=4096 --memory-total-size=512M run
+
+
+
+4k rand read/write
+64 seq 吞吐
+
+
+
+
+
+---------------
+[discuss]
+硬件测试，使用额外的磁盘。
+
+
+
+[base]
+iperf测试时找的客户端，是否在同一个子网。
+在一个vpc里面
+
+
+
+
+云服务器benchmark指标及方法
+1.cpu
+测试方法：求20w内素数所花时间
+sysbench  --num-threads=64 --test=cpu --cpu-max-prime=200000 run
+
+2.disk io
+测试磁盘：rootfs测试，外挂盘测试
+(1)iops
+测试方法：4k随机写时的iops
+fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=test --filename=test --bs=4k --iodepth=64 --size=4G --readwrite=randwrite
+(2)throughput
+测试方法：64k顺序读写的速度
+
+3.network
+(1)bandwidth
+测试方法：用两台客户端测一个服务器的bandwidth
+(2)pps
+iperf -M 88 -c server_ip
+(3)latency
+延时
+工具：ping
+(4)lost
+丢包率
+工具：iperf
+(5)jitter
+网络抖动
+工具：iperf
+
+4.memory
+测试内存分配及传输速度
+sysbench --test=memory --num-threads=1 --memory-block-size=4096 --memory-total-size=4G run
+
+
+-----
+http://wiki.ele.to:8090/pages/viewpage.action?pageId=39353104
+-----
+
+服务器性能标准
+转至元数据结尾
+创建： 李帅，最新修改： 徐巍 不到1分钟以前 转至元数据起始
+目前我们的环境有自建物理机，自建虚拟化，腾讯云，阿里云，其中的关键性能指标基线如下：
+CPU测试：求20w以内的素数，(20w/用时)为衡量指标
+sysbench  --num-threads=64 --test=cpu --cpu-max-prime=200000 run测试，
+磁盘iops测试(只有系统盘的机型，为系统盘的性能，有额外硬盘的机型，性能为额外硬盘的性能)
+测试命令：fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=test --filename=test --bs=4k --iodepth=64 --size=4G --readwrite=randwrite
+网络带宽测试，需要把被测试机器作为服务端，run：iperf -s
+找两台服务器作为客户端，run：iperf -c server_ip 
+将两台客户端的测试结果相加作为测试结果
+网络包量测试，需要被测试机器作为服务端，run:iperf -s
+找一台客户端，run:iperf -M 88 -c server_ip
+同时观察记录服务器网卡的包量，作为测试结果
+
+
+dmidecode -t memory
+
+
+
+阿里，腾讯不通类型（独享型，共享型，内存型，计算型，io加强型）8c16g
+然后挂本地盘，本地ssd盘，云盘，高速云盘，高速ssd云盘
+交叉得到几个类型后
+pps，cpu，mem，net，iops的指标应该就够了
+
+
+（系统盘都有“高效云盘”和“SSD云盘”两种类型，数据盘均有“普通云盘”、“高效云盘”和“SSD云盘”）
+
+-------------------机型
+CPU和内存配置：8C16G
+
+阿里云
+普通机型（系统盘：高效云盘，数据盘：高效云盘），avm2
+
+
+
+
+
+
+aws
+类型：C4
+计算优化
+c4.2xlarge
+8C15G 
+EBS
+
+
+类型：C3
+计算优化
+c3.2xlarge
+8C15G
+SSD(2*80)
+
+内存优化
+R4，内存密集型应用
+r4.xlarge,4C30.5G
+
+存储优化
+I2，i2xlarge, 8C61G
+
+
+
+
+
+
+
+
+
+
+
+
+
