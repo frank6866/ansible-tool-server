@@ -24,7 +24,7 @@ iops
 yum install epel-release
 yum install sysbench
 
-sysbench  --num-threads=64 --test=cpu --cpu-max-prime=200 run
+sysbench  --num-threads=64 --test=cpu --cpu-max-prime=20000 run
 输出格式：
 ----
 sysbench 0.4.12:  multi-threaded system evaluation benchmark
@@ -59,7 +59,7 @@ Threads fairness:
 
 
 
-sysbench ––test=memory ––num-threads=1 ––memory-block-size=4096 ––memory-total-size=1G run
+sysbench ––test=memory ––num-threads=1 ––memory-block-size=4096 ––memory-total-size=4G run
 
 
 
@@ -122,7 +122,7 @@ iperf -M 88 -c server_ip
 
 
 [memory]
-sysbench --test=memory --num-threads=1 --memory-block-size=4096 --memory-total-size=512M run
+sysbench --test=memory --num-threads=1 --memory-block-size=4096 --memory-total-size=4G run
 
 
 
