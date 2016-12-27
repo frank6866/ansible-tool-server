@@ -1,0 +1,7 @@
+
+每个指标做成下钻的。
+最上层显示的是平均值,下钻之后显示:横坐标为每次测试的时间
+
+http://www.hcharts.cn/demo/highcharts/column-drilldown
+
+
