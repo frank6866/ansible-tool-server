@@ -82,7 +82,9 @@ test: (groupid=0, jobs=1): err= 0: pid=13851: Sun Dec 25 23:21:00 2016
 获取输出中的iops
 
 
+ip addr | grep 'state ' -A2 | tail -n1 | awk '{print $2}' | cut -f1  -d'/'
 
+ip addr | grep 'state UP' -A2 | tail -n1 | awk -F'[/ ]+' '{print $3}'
 
 
 
@@ -210,38 +212,6 @@ pps，cpu，mem，net，iops的指标应该就够了
 
 
 （系统盘都有“高效云盘”和“SSD云盘”两种类型，数据盘均有“普通云盘”、“高效云盘”和“SSD云盘”）
-
--------------------机型
-CPU和内存配置：8C16G
-
-阿里云
-普通机型（系统盘：高效云盘，数据盘：高效云盘），avm2
-
-
-
-
-
-
-aws
-类型：C4
-计算优化
-c4.2xlarge
-8C15G 
-EBS
-
-
-类型：C3
-计算优化
-c3.2xlarge
-8C15G
-SSD(2*80)
-
-内存优化
-R4，内存密集型应用
-r4.xlarge,4C30.5G
-
-存储优化
-I2，i2xlarge, 8C61G
 
 
 
