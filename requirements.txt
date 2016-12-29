@@ -16,7 +16,7 @@ WebOb
 PasteDeploy
 Paste
 
-
+pymongo
 
 # oslo
 oslo.cache
