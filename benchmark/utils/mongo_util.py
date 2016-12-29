@@ -48,7 +48,44 @@ def insert_many_server(servers):
         insert_server(server)
 
 
+def get_server(key, value):
+    collection = db[settings.mongodb_collection_servers]
+    results = collection.find({key: value})
+    return results
+
+
 def get_all_servers():
     collection = db[settings.mongodb_collection_servers]
     results = collection.find({})
     return results
+
+
+def truncate_servers():
+    collection = db[settings.mongodb_collection_servers]
+    collection.delete_many({})
+
+
+# charts
+def insert_chart(chart):
+    id = chart["id"]
+    collection = db[settings.mongodb_collection_charts]
+    collection.update({"id": id}, chart, upsert=True)
+
+
+def get_chart(chart_id):
+    collection = db[settings.mongodb_collection_charts]
+    collection.find_one({"id": chart_id})
+
+
+def insert_many_charts(charts):
+    for chart in charts:
+        insert_chart(chart)
+
+
+def truncate_charts():
+    collection = db[settings.mongodb_collection_charts]
+    collection.delete_many({})
+
+
+
+

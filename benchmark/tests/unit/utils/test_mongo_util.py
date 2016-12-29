@@ -19,5 +19,7 @@ class TestProcessUtil(unittest.TestCase):
     def test_truncate_test_results(self):
         mongo_util.truncate_test_results()
 
+    def test_truncate_test_servers(self):
+        mongo_util.truncate_servers()
 
 

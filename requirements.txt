@@ -16,7 +16,6 @@ WebOb
 PasteDeploy
 Paste
 
-pymongo
 
 # oslo
 oslo.cache
@@ -35,5 +34,13 @@ oslo.i18n
 oslo.service
 oslo.middleware
 oslo.versionedobjects
+
+
+# benchmark
+pymongo
+flask
+flask_cors
+flask_restful
+
 
 
